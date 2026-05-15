@@ -1,0 +1,1 @@
+web: ./mt-tgadmin run
