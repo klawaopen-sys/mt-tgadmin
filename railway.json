@@ -1,5 +1,0 @@
-{
-  "buildCommand": "chmod +x mt-tgadmin",
-  "startCommand": "./mt-tgadmin run",
-  "port": 8080
-}
