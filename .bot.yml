@@ -5,4 +5,4 @@ bot_chat_id: -1002147858686
 gui_password: "88888888"
 webserver_port: 8080
 webserver_host: "0.0.0.0"
-webserver_cookie_secret: "super_secret_key_2026_change_me_please_make_it_longer"
+webserver_cookie_secret: "super_secret_key_2026_change_me_please_make_it_longer_12345"
