@@ -1,4 +1,6 @@
-token: "7394557878:AAEymj08uTVY4ya3jXLOhcSjVsgswTzmdS0"
-chat_id: -1002147858686
-password: "88888888"
-port: "8080"
+production: true
+bot_token: "7394557878:AAEymj08uTVY4ya3jXLOhcSjVsgswTzmdS0"
+bot_chat_id: -1002147858686
+gui_password: "88888888"
+webserver_port: 8080
+webserver_cookie_secret: "super_secret_key_2026_change_me"
