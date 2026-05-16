@@ -3,10 +3,10 @@ FROM golang:1.25-alpine AS builder
 WORKDIR /app
 COPY . .
 
-RUN chmod +x mt-tgadmin
+# Собираем бинарник заново под правильную архитектуру
 RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o mt-tgadmin main.go
 
-# Если бинарник уже есть — используем его
 FROM alpine:latest
 
 WORKDIR /app
