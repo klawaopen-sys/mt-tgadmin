@@ -1,0 +1,5 @@
+{
+  "buildCommand": "go mod download && go build -o mt-tgadmin main.go",
+  "startCommand": "./mt-tgadmin run",
+  "port": 8080
+}
