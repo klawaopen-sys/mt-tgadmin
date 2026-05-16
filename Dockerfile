@@ -13,7 +13,11 @@ WORKDIR /app
 COPY --from=builder /app/mt-tgadmin .
 COPY .bot.yml .
 
-RUN ls -la          # для отладки
+# === ОТЛАДКА ===
+RUN ls -la
+RUN pwd
+RUN cat .bot.yml
+
 RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
