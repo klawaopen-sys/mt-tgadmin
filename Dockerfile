@@ -10,16 +10,12 @@ FROM alpine:latest
 
 WORKDIR /app
 
-# Копируем бинарник и конфиг
 COPY --from=builder /app/mt-tgadmin .
 COPY .bot.yml .
 
-# Отладка — показываем, что есть в папке
-RUN ls -la
-
+RUN ls -la          # для отладки
 RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
 
-# Запускаем с явным указанием файла настроек
 CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
