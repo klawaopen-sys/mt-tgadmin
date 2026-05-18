@@ -17,4 +17,4 @@ RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
 
-CMD sh -c "./mt-tgadmin run --settings .bot.yml --host 0.0.0.0 --port $PORT"
+CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
