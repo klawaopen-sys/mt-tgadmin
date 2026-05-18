@@ -17,5 +17,4 @@ RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
 
-# Принудительно запускаем на всех интерфейсах
 CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
