@@ -11,10 +11,9 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder /app/mt-tgadmin .
-COPY .bot.yml .
 
 RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
 
-CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
+CMD sh -c 'printf "production: true\nbase_url: \"https://mt-tgadmin-production.up.railway.app\"\nbot_token: \"%s\"\nbot_chat_id: %s\ngui_password: \"%s\"\nwebserver_port: %s\nwebserver_hostname: \"%s\"\nwebserver_cookie_secret: \"%s\"\n" "$BOT_TOKEN" "$CHAT_ID" "$PASSWORD" "$PORT" "${HOST:-0.0.0.0}" "$COOKIE_SECRET" > .bot.yml && ./mt-tgadmin run --settings .bot.yml'
