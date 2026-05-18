@@ -13,11 +13,9 @@ WORKDIR /app
 COPY --from=builder /app/mt-tgadmin .
 COPY .bot.yml .
 
-RUN ls -la
-RUN cat .bot.yml
 RUN chmod +x mt-tgadmin
 
 EXPOSE 8080
 
-# Запускаем с явным указанием хоста
-CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml", "--webserver-host", "0.0.0.0"]
+# Принудительно запускаем на всех интерфейсах
+CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
