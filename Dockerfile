@@ -20,4 +20,4 @@ RUN chmod +x mt-tgadmin
 EXPOSE 8080
 
 # Запускаем с явным указанием хоста
-CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml"]
+CMD ["./mt-tgadmin", "run", "--settings", ".bot.yml", "--webserver-host", "0.0.0.0"]
