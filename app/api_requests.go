@@ -56,6 +56,93 @@ func Api_Say(r *goapp.ApiRequest) error {
 
 	text := r.GetInData("message")
 	text = PrepareTelegramHtml(text)
+
+	photoURL := r.GetInData("photo_url")
+	photoBase64 := r.GetInData("photo_base64")
+	photoName := r.GetInData("photo_name")
+
+	buttonText := r.GetInData("button_text")
+	buttonURL := r.GetInData("button_url")
+
+	var replyMarkup interface{} = nil
+
+	if buttonText != "" && buttonURL != "" {
+		replyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonURL(buttonText, buttonURL),
+			),
+		)
+	}
+
+	if photoBase64 != "" {
+		if strings.Contains(photoBase64, ",") {
+			parts := strings.SplitN(photoBase64, ",", 2)
+			photoBase64 = parts[1]
+		}
+
+		photoBytes, err := base64.StdEncoding.DecodeString(photoBase64)
+		if err != nil {
+			r.SetErrorStatus("Ошибка чтения фото: " + err.Error())
+			return nil
+		}
+
+		if photoName == "" {
+			photoName = "photo.jpg"
+		}
+
+		photo := tgbotapi.NewPhoto(Settings.BotChatID, tgbotapi.FileBytes{
+			Name:  photoName,
+			Bytes: photoBytes,
+		})
+
+		photo.Caption = text
+		photo.ParseMode = "HTML"
+
+		if reply_to := r.GetInDataInt("reply_to", 0); reply_to > 0 {
+			photo.ReplyToMessageID = reply_to
+		}
+
+		if r.GetInDataInt("silent", 0) != 0 {
+			photo.DisableNotification = true
+		}
+
+		if replyMarkup != nil {
+			photo.ReplyMarkup = replyMarkup
+		}
+
+		if _, err := tgBot.Send(photo); err != nil {
+			r.SetErrorStatus("Ошибка отправки фото: " + err.Error())
+			return nil
+		}
+
+		return nil
+	}
+
+	if photoURL != "" {
+		photo := tgbotapi.NewPhoto(Settings.BotChatID, tgbotapi.FileURL(photoURL))
+		photo.Caption = text
+		photo.ParseMode = "HTML"
+
+		if reply_to := r.GetInDataInt("reply_to", 0); reply_to > 0 {
+			photo.ReplyToMessageID = reply_to
+		}
+
+		if r.GetInDataInt("silent", 0) != 0 {
+			photo.DisableNotification = true
+		}
+
+		if replyMarkup != nil {
+			photo.ReplyMarkup = replyMarkup
+		}
+
+		if _, err := tgBot.Send(photo); err != nil {
+			r.SetErrorStatus("Ошибка отправки фото по ссылке: " + err.Error())
+			return nil
+		}
+
+		return nil
+	}
+
 	msg := tgbotapi.NewMessage(Settings.BotChatID, text)
 	msg.ParseMode = "HTML"
 
@@ -67,12 +154,15 @@ func Api_Say(r *goapp.ApiRequest) error {
 		msg.DisableNotification = true
 	}
 
+	if replyMarkup != nil {
+		msg.ReplyMarkup = replyMarkup
+	}
+
 	if _, err := tgBot.Send(msg); err != nil {
-		r.SetErrorStatus("Error sending message: " + err.Error())
+		r.SetErrorStatus("Ошибка отправки сообщения: " + err.Error())
 		return nil
 	}
 
-	//log.Println("Said:", text)
 	return nil
 }
 
