@@ -1,8 +1,6 @@
-production: true
-base_url: "https://mt-tgadmin-production.up.railway.app"
-bot_token: "7394557878:AAEymj08uTVY4ya3jXLOhcSjVsgswTzmdS0"
-bot_chat_id: -1002147858686
-gui_password: "88888888"
-webserver_port: 8080
-webserver_hostname: "0.0.0.0"
-webserver_cookie_secret: "mt_tgadmin_secure_cookie_secret_2026_railway_production_84hf92hf92hf"
+bot_token: "${BOT_TOKEN}"
+bot_chat_id: ${CHAT_ID}
+gui_password: "${PASSWORD}"
+webserver_port: ${PORT}
+webserver_hostname: "${HOST}"
+webserver_cookie_secret: "${COOKIE_SECRET}"
