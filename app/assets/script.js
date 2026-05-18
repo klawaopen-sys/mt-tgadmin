@@ -11,7 +11,7 @@ let ComponentMessage = {
         <span class="fw-bold">{{m.user}}</span><span class="small text-muted ms-3">{{m.date}}</span>
       </div>
       <div>
-        <a :class="['btn-' + (replymode ? 'warning' : 'primary')]" class="btn btn-sm" @click="$parent.set_reply_message(replymode ? null : m);" v-text="replymode ? 'Unset' : 'Reply'"></a>
+        <a :class="['btn-' + (replymode ? 'warning' : 'primary')]" class="btn btn-sm" @click="$parent.set_reply_message(replymode ? null : m);" v-text="replymode ? 'Отменить' : 'Ответить'"></a>
       </div>
     </div>
   </div>
@@ -27,10 +27,9 @@ let ComponentMain = {
       messages: [],
       reply: null,
 
-      //https://ckeditor.com/ckeditor-5/online-builder/
       editor: ClassicEditor,
-		  editorData: '',
-		  editorConfig: {},
+      editorData: '',
+      editorConfig: {},
     }
   },
 
@@ -40,16 +39,12 @@ let ComponentMain = {
 
   methods: {
     set_reply_message: function (message) {
-      //alert('set_reply_message'); console.log(message);
-
       this.reply = message;
     },
 
     logout: function () {
-      //alert('logout');
       ApiRequest('logout', null, this, function (response) {
-        //console.log(response);
-        MtData.session = false; //adjust GUI
+        MtData.session = false;
       });
     },
 
@@ -59,8 +54,6 @@ let ComponentMain = {
         reply_to: this.reply?.message_id,
         silent: document.getElementById('silentCheck')?.checked ? 1 : 0,
       }
-
-      //console.log(data); return;
 
       if(data.message)
       {
@@ -74,25 +67,22 @@ let ComponentMain = {
       }
       else
       {
-        //console.log('Empty set!');
         MtData.status.kind = 'warning';
-        MtData.status.body = 'Empty message!';
+        MtData.status.body = 'Сообщение пустое!';
       }
     },
 
     list_messages: function () {
       ApiRequest('list_messages', null, this, function (response) {
-        //console.log(response);
 
         if(response.status == "ok")
         {
-          //console.log(response.list);
           this.messages = response.list;
 
           if(response.list.length == 0)
           {
             MtData.status.kind = "info";
-            MtData.status.body = "Empty messages list received (" + (new Date()).toLocaleString() + ").";
+            MtData.status.body = "Список сообщений пуст (" + (new Date()).toLocaleString() + ").";
           }
         }
       });
@@ -107,7 +97,7 @@ let ComponentMain = {
         <a class="btn btn-primary" @click="list_messages();">Получить сообщения</a>
       </div>
       <div>
-        <a class="btn btn-secondary" @click="logout();">Logout</a>
+        <a class="btn btn-secondary" @click="logout();">Выйти</a>
       </div>
     </div>
   </div>
@@ -116,25 +106,27 @@ let ComponentMain = {
 <div id="send" class="card">
   <div class="card-body">
     <div v-if="reply" class="mb-3">
-      <h5 class="card-title">In Reply to:</h5>
+      <h5 class="card-title">Ответ на сообщение:</h5>
       <component-message v-bind:m="reply" v-bind:replymode="true"></component-message>
     </div>
 
-    <h5 class="card-title">Say:</h5>
+    <h5 class="card-title">Сообщение:</h5>
     <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" id="messageEditor"></ckeditor>
+
     <div class="form-check">
       <input class="form-check-input" type="checkbox" value="" id="silentCheck">
       <label class="form-check-label" for="silentCheck">
-        Silent Message
+        Тихое сообщение
       </label>
     </div>
-    <a class="btn btn-success mt-3" @click="say()">Say</a>
+
+    <a class="btn btn-success mt-3" @click="say()">Отправить</a>
   </div>
 </div>
 
 <div id="messages" class="card mt-3" v-if="messages.length > 0">
   <div class="card-body">
-    <h5 class="card-title">Latest messages from chat</h5>
+    <h5 class="card-title">Последние сообщения из чата</h5>
     <component-message v-bind:m="m" v-for="m in messages" :key="m.message_id" v-bind:replymode="false"></component-message>
   </div>
 </div>
@@ -169,40 +161,38 @@ let ComponentAuth = {
       }
 
       ApiRequest('password', data, this, function (response) {
-        //console.log(response);
-
         if(response.status == "ok")
         {
-          MtData.session = true; //adjust GUI
+          MtData.session = true;
         }
         else
         {
-          //alert(response.message);
           document.getElementById('password').value = '';
         }
       });
     }
   },
+
   template: `
 <div class="mb-3">
-  <label for="password" class="form-label">Password please</label>
+  <label for="password" class="form-label">Введите пароль</label>
   <input type="password" class="form-control" id="password" @keyup.enter="password();">
 </div>
-<a class="btn btn-success" @click="password();">Authorize</a>
+
+<a class="btn btn-success" @click="password();">Войти</a>
 `
 }
+
 //#endregion
 
 //#region Main code
 
 var MtData = {
-  // take initial value from global variable provided in index.html
   session: mtAuth,
   status: { body: "", kind: "primary" },
 }
 
 Vue.createApp({
-  // delimiters are set only for this component (index.html is go template). Each component has it own delimiters.
   delimiters: ['[[', ']]'],
 
   components: {
@@ -222,6 +212,7 @@ Vue.createApp({
 //#endregion
 
 //#region Helpers
+
 function ApiRequest(path, data, component, responseHandler)
 {
   fetch(
@@ -237,6 +228,7 @@ function ApiRequest(path, data, component, responseHandler)
   )
     .then(response => response.json())
     .then(function(response){
+
       if(response.status == "ok")
       {
         MtData.status.kind = "success";
@@ -258,4 +250,5 @@ function ApiRequest(path, data, component, responseHandler)
       }
     });
 }
+
 //#endregion
