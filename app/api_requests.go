@@ -208,3 +208,64 @@ func Api_ListMessages(r *goapp.ApiRequest) error {
 	r.SetOutData("list", list)
 	return nil
 }
+
+func Api_AiPost(r *goapp.ApiRequest) error {
+
+	if r.GetInData("api_key") != "klava_super_secret_ai_post_key_2026_telegram_autopost" {
+		r.SetErrorStatus("Invalid API key")
+		return nil
+	}
+
+	text := r.GetInData("message")
+	text = PrepareTelegramHtml(text)
+
+	photoURL := r.GetInData("photo_url")
+
+	buttonText := r.GetInData("button_text")
+	buttonURL := r.GetInData("button_url")
+
+	var replyMarkup interface{} = nil
+
+	if buttonText != "" && buttonURL != "" {
+		replyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonURL(buttonText, buttonURL),
+			),
+		)
+	}
+
+	if photoURL != "" {
+
+		photo := tgbotapi.NewPhoto(Settings.BotChatID, tgbotapi.FileURL(photoURL))
+		photo.Caption = text
+		photo.ParseMode = "HTML"
+
+		if replyMarkup != nil {
+			photo.ReplyMarkup = replyMarkup
+		}
+
+		if _, err := tgBot.Send(photo); err != nil {
+			r.SetErrorStatus("Error sending photo: " + err.Error())
+			return nil
+		}
+
+		r.SetOkStatus("Photo sent")
+		return nil
+	}
+
+	msg := tgbotapi.NewMessage(Settings.BotChatID, text)
+	msg.ParseMode = "HTML"
+
+	if replyMarkup != nil {
+		msg.ReplyMarkup = replyMarkup
+	}
+
+	if _, err := tgBot.Send(msg); err != nil {
+		r.SetErrorStatus("Error sending message: " + err.Error())
+		return nil
+	}
+
+	r.SetOkStatus("Message sent")
+
+	return nil
+}
