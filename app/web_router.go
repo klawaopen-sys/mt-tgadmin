@@ -39,5 +39,6 @@ func BuildWebApiRouter(app *goapp.AppBase) {
 		ApiHandler("/password", Api_Password).
 		ApiHandler("/logout", Api_Logout).
 		ApiHandler("/say", Api_Say).
+	  ApiHandler("/ai_post", Api_AiPost).
 		ApiHandler("/list_messages", Api_ListMessages)
 }
